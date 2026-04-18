@@ -272,8 +272,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
         <option value="base">Base</option><option value="solana">Solana</option>
       </select>
     </div>
-    <div class="field" style="flex:1;min-width:260px"><label>Pool Address</label>
-      <input id="chart-pool" placeholder="0x…" value="0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE">
+    <div class="field" style="flex:1;min-width:260px"><label>Pool Address or Ticker (e.g. BTCUSDT)</label>
+      <input id="chart-pool" placeholder="0x… or BTCUSDT" value="BTCUSDT">
     </div>
     <div class="field"><label>Timeframe</label>
       <select id="chart-tf" style="width:110px">
@@ -292,6 +292,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
   </div>
   <div id="chart-container"></div>
   <div id="chart-stats" class="grid-4" style="gap:12px"></div>
+  <div id="chart-source" style="margin-top:8px;font-size:.75rem;color:var(--muted)"></div>
   <div id="chart-error"></div>
 </div>
 
@@ -608,6 +609,9 @@ async function loadChart() {
       statCard('Open', fmt(last.open)) +
       statCard('High', fmt(last.high)) +
       statCard('Low', fmt(last.low));
+
+    const srcLabels = {binance:'📊 Binance (unlimited)', geckoterminal:'🦎 GeckoTerminal (cached 5min)', dexscreener_synthetic:'⚠️ DexScreener synthetic (GeckoTerminal rate-limited)'};
+    document.getElementById('chart-source').innerHTML = `Data source: <strong>${srcLabels[data.source] || data.source || 'unknown'}</strong>`;
   } catch(e) {
     document.getElementById('chart-container').innerHTML = '';
     showError('chart-error', e.message);
