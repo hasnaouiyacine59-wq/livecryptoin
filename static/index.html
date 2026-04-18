@@ -546,6 +546,9 @@ function showPage(id, el) {
     });
   }
   if (id === 'chains') renderChains();
+  // Reload A-ADS iframe on every page visit
+  const f = document.querySelector('#aads-top iframe');
+  if (f) { const s = f.src.split('?')[0]; f.src = ''; f.src = s + '?size=Adaptive&t=' + Date.now(); }
 }
 
 function fmt(n) {
