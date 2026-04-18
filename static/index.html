@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiveCryptoIn</title>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#d29922;--purple:#bc8cff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--blue);text-decoration:none}
+input,select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 12px;font-size:.9rem;outline:none;width:100%}
+input:focus,select:focus{border-color:var(--blue)}
+button{cursor:pointer;border:none;border-radius:6px;padding:8px 16px;font-size:.9rem;font-weight:600;transition:.15s}
+.btn-primary{background:var(--blue);color:#0d1117}
+.btn-primary:hover{opacity:.85}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-green{background:var(--green);color:#0d1117}
+.btn-green:hover{opacity:.85}
+nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:8px;height:56px;position:sticky;top:0;z-index:100}
+nav .logo{font-size:1.1rem;font-weight:700;color:var(--blue);margin-right:16px;white-space:nowrap}
+nav .logo span{color:var(--green)}
+.nav-links{display:flex;gap:4px;flex:1}
+.nav-link{padding:6px 12px;border-radius:6px;font-size:.85rem;color:var(--muted);cursor:pointer;white-space:nowrap;transition:.15s}
+.nav-link:hover,.nav-link.active{background:var(--bg3);color:var(--text)}
+.search-bar{display:flex;gap:8px;max-width:340px;width:100%}
+.search-bar input{padding:6px 12px;font-size:.85rem}
+main{flex:1;padding:24px;max-width:1400px;margin:0 auto;width:100%}
+.page{display:none}
+.page.active{display:block}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.stat-card .label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.stat-card .value{font-size:1.4rem;font-weight:700}
+.stat-card .change{font-size:.8rem;margin-top:4px}
+.up{color:var(--green)}.down{color:var(--red)}
+.section-title{font-size:1rem;font-weight:600;margin-bottom:16px;color:var(--text)}
+.row{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+#chart-container{height:420px;border-radius:8px;overflow:hidden;background:var(--bg3);margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;padding:10px 12px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em}
+td{padding:10px 12px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600}
+.badge-buy{background:#1a3a2a;color:var(--green)}
+.badge-sell{background:#3a1a1a;color:var(--red)}
+.badge-chain{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+.token-icon{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--blue);margin-right:8px;vertical-align:middle;border:1px solid var(--border)}
+.pair-row{display:flex;align-items:center}
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:.9rem}
+.error-msg{background:#3a1a1a;border:1px solid var(--red);color:var(--red);padding:12px 16px;border-radius:8px;font-size:.85rem;margin-bottom:16px}
+.swap-card{max-width:480px;margin:0 auto}
+.swap-input-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:8px}
+.swap-input-wrap .top{display:flex;justify-content:space-between;margin-bottom:8px;font-size:.8rem;color:var(--muted)}
+.swap-input-wrap input{background:transparent;border:none;font-size:1.5rem;font-weight:700;padding:0;width:60%}
+.swap-input-wrap select{background:var(--bg2);border:1px solid var(--border);width:auto;font-weight:600}
+.swap-arrow{text-align:center;margin:4px 0;font-size:1.2rem;color:var(--muted);cursor:pointer;user-select:none}
+.swap-arrow:hover{color:var(--blue)}
+.quote-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px;font-size:.85rem}
+.quote-row{display:flex;justify-content:space-between;padding:4px 0;color:var(--muted)}
+.quote-row span:last-child{color:var(--text);font-weight:500}
+.chains-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.chain-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:.15s}
+.chain-card:hover{border-color:var(--blue);background:var(--bg3)}
+.chain-card .chain-name{font-weight:600;margin-top:8px;font-size:.9rem}
+.chain-card .chain-id{font-size:.75rem;color:var(--muted);margin-top:2px}
+.chain-emoji{font-size:2rem}
+.ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 24px;overflow:hidden;white-space:nowrap;font-size:.8rem}
+.ticker-inner{display:inline-flex;gap:32px;animation:ticker 30s linear infinite}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:inline-flex;align-items:center;gap:6px}
+.ticker-item .name{color:var(--muted)}
+.ticker-item .price{font-weight:600}
+.home-hero{text-align:center;padding:60px 20px 40px}
+.home-hero h1{font-size:2.5rem;font-weight:800;margin-bottom:12px}
+.home-hero h1 span{color:var(--blue)}
+.home-hero p{color:var(--muted);font-size:1.05rem;max-width:520px;margin:0 auto 28px}
+.home-hero .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:40px}
+.feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px}
+.feature-card .icon{font-size:1.8rem;margin-bottom:10px}
+.feature-card h3{font-size:.95rem;font-weight:600;margin-bottom:6px}
+.feature-card p{font-size:.82rem;color:var(--muted);line-height:1.5}
+.portfolio-header{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.portfolio-header input{max-width:340px}
+.token-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.token-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.token-card .t-header{display:flex;align-items:center;margin-bottom:12px}
+.token-card .t-name{font-weight:600;font-size:.95rem}
+.token-card .t-symbol{font-size:.75rem;color:var(--muted);margin-top:1px}
+.token-card .t-price{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.token-card .t-stats{display:flex;gap:12px;font-size:.78rem;color:var(--muted)}
+.timeframe-btns{display:flex;gap:6px;margin-bottom:12px}
+.tf-btn{padding:4px 10px;font-size:.78rem;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer}
+.tf-btn.active{background:var(--blue);color:#0d1117;border-color:var(--blue)}
+@media(max-width:768px){
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  nav .nav-links{display:none}
+  .home-hero h1{font-size:1.8rem}
+  main{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">⚡Live<span>CryptoIn</span></div>
+  <div class="nav-links">
+    <div class="nav-link active" onclick="showPage('home',this)">Home</div>
+    <div class="nav-link" onclick="showPage('chart',this)">Chart</div>
+    <div class="nav-link" onclick="showPage('trades',this)">Trades</div>
+    <div class="nav-link" onclick="showPage('token',this)">Token</div>
+    <div class="nav-link" onclick="showPage('search',this)">Search</div>
+    <div class="nav-link" onclick="showPage('swap',this)">Swap</div>
+    <div class="nav-link" onclick="showPage('portfolio',this)">Portfolio</div>
+    <div class="nav-link" onclick="showPage('chains',this)">Chains</div>
+  </div>
+  <div class="search-bar">
+    <input id="global-search" placeholder="Search token or pair…" onkeydown="if(event.key==='Enter')quickSearch()">
+    <button class="btn-primary" onclick="quickSearch()">Go</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-bar"><div class="ticker-inner" id="ticker">Loading market data…</div></div>
+
+<main>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <h1>Realtime <span>DEX Data</span> Platform</h1>
+    <p>Live charts, trades, token info, swap quotes and portfolio tracking across 10 blockchains — powered by GeckoTerminal, DexScreener & LiFi.</p>
+    <div class="actions">
+      <button class="btn-primary" onclick="showPage('chart',null)">📈 Open Chart</button>
+      <button class="btn-ghost" onclick="showPage('swap',null)">🔄 Swap Tokens</button>
+      <button class="btn-ghost" onclick="showPage('search',null)">🔍 Search Tokens</button>
+    </div>
+  </div>
+  <div class="features">
+    <div class="feature-card"><div class="icon">📈</div><h3>Live OHLCV Charts</h3><p>Candlestick charts for any DEX pool across 10 chains with minute/hour/day timeframes.</p></div>
+    <div class="feature-card"><div class="icon">⚡</div><h3>Real-time Trades</h3><p>Stream of recent buy/sell trades for any pool with amounts, prices and timestamps.</p></div>
+    <div class="feature-card"><div class="icon">🪙</div><h3>Token Info</h3><p>Price, volume, liquidity, market cap and all trading pairs for any token.</p></div>
+    <div class="feature-card"><div class="icon">🔄</div><h3>Cross-chain Swap</h3><p>Get best swap & bridge quotes across chains via LiFi aggregator.</p></div>
+    <div class="feature-card"><div class="icon">💼</div><h3>Portfolio</h3><p>View token holdings and pair data for any wallet address.</p></div>
+    <div class="feature-card"><div class="icon">🔍</div><h3>Token Search</h3><p>Search any token or pair by name, symbol or contract address.</p></div>
+    <div class="feature-card"><div class="icon">⛓️</div><h3>10 Chains</h3><p>Ethereum, BNB, Polygon, Avalanche, Fantom, Arbitrum, Cronos, Optimism, Base, Solana.</p></div>
+    <div class="feature-card"><div class="icon">🆓</div><h3>No API Keys</h3><p>All data sources are free and public — no registration or keys required.</p></div>
+  </div>
+</div>
+
+<!-- CHART -->
+<div class="page" id="page-chart">
+  <div class="section-title">📈 OHLCV Chart</div>
+  <div class="row">
+    <div class="field"><label>Chain</label>
+      <select id="chart-chain" style="width:140px">
+        <option value="ethereum">Ethereum</option><option value="bsc" selected>BSC</option>
+        <option value="polygon">Polygon</option><option value="avalanche">Avalanche</option>
+        <option value="fantom">Fantom</option><option value="arbitrum">Arbitrum</option>
+        <option value="cronos">Cronos</option><option value="optimism">Optimism</option>
+        <option value="base">Base</option><option value="solana">Solana</option>
+      </select>
+    </div>
+    <div class="field" style="flex:1;min-width:260px"><label>Pool Address</label>
+      <input id="chart-pool" placeholder="0x…" value="0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE">
+    </div>
+    <div class="field"><label>Timeframe</label>
+      <select id="chart-tf" style="width:110px">
+        <option value="minute">Minute</option><option value="hour" selected>Hour</option><option value="day">Day</option>
+      </select>
+    </div>
+    <div class="field"><label>Limit</label>
+      <input id="chart-limit" type="number" value="100" style="width:80px">
+    </div>
+    <button class="btn-primary" onclick="loadChart()">Load</button>
+  </div>
+  <div class="timeframe-btns">
+    <button class="tf-btn active" onclick="setTF('minute',this)">1m</button>
+    <button class="tf-btn" onclick="setTF('hour',this)">1h</button>
+    <button class="tf-btn" onclick="setTF('day',this)">1d</button>
+  </div>
+  <div id="chart-container"></div>
+  <div id="chart-stats" class="grid-4" style="gap:12px"></div>
+  <div id="chart-error"></div>
+</div>
+
+<!-- TRADES -->
+<div class="page" id="page-trades">
+  <div class="section-title">⚡ Recent Trades</div>
+  <div class="row">
+    <div class="field"><label>Chain</label>
+      <select id="trades-chain" style="width:140px">
+        <option value="ethereum">Ethereum</option><option value="bsc" selected>BSC</option>
+        <option value="polygon">Polygon</option><option value="avalanche">Avalanche</option>
+        <option value="fantom">Fantom</option><option value="arbitrum">Arbitrum</option>
+        <option value="cronos">Cronos</option><option value="optimism">Optimism</option>
+        <option value="base">Base</option><option value="solana">Solana</option>
+      </select>
+    </div>
+    <div class="field" style="flex:1;min-width:260px"><label>Pool Address</label>
+      <input id="trades-pool" placeholder="0x…" value="0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE">
+    </div>
+    <button class="btn-primary" onclick="loadTrades()">Load</button>
+    <button class="btn-ghost" onclick="startAutoRefresh()">🔄 Auto-refresh</button>
+  </div>
+  <div id="trades-error"></div>
+  <div class="card" style="overflow-x:auto">
+    <table id="trades-table">
+      <thead><tr><th>Type</th><th>Price USD</th><th>Amount 0</th><th>Amount 1</th><th>Volume USD</th><th>Time</th><th>Tx</th></tr></thead>
+      <tbody id="trades-body"><tr><td colspan="7" class="loading">Enter a pool address and click Load</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TOKEN -->
+<div class="page" id="page-token">
+  <div class="section-title">🪙 Token Info</div>
+  <div class="row">
+    <div class="field"><label>Chain</label>
+      <select id="token-chain" style="width:140px">
+        <option value="ethereum">Ethereum</option><option value="bsc" selected>BSC</option>
+        <option value="polygon">Polygon</option><option value="avalanche">Avalanche</option>
+        <option value="fantom">Fantom</option><option value="arbitrum">Arbitrum</option>
+        <option value="cronos">Cronos</option><option value="optimism">Optimism</option>
+        <option value="base">Base</option><option value="solana">Solana</option>
+      </select>
+    </div>
+    <div class="field" style="flex:1;min-width:260px"><label>Token Address</label>
+      <input id="token-addr" placeholder="0x…">
+    </div>
+    <button class="btn-primary" onclick="loadToken()">Load</button>
+  </div>
+  <div id="token-error"></div>
+  <div id="token-stats" class="grid-4" style="gap:12px;margin-bottom:16px"></div>
+  <div id="token-pairs"></div>
+</div>
+
+<!-- SEARCH -->
+<div class="page" id="page-search">
+  <div class="section-title">🔍 Search Tokens & Pairs</div>
+  <div class="row">
+    <div class="field" style="flex:1"><label>Query</label>
+      <input id="search-q" placeholder="Token name, symbol or address…" onkeydown="if(event.key==='Enter')doSearch()">
+    </div>
+    <button class="btn-primary" onclick="doSearch()">Search</button>
+  </div>
+  <div id="search-error"></div>
+  <div id="search-results" class="token-list"></div>
+</div>
+
+<!-- SWAP -->
+<div class="page" id="page-swap">
+  <div class="section-title">🔄 Swap / Bridge</div>
+  <div class="swap-card">
+    <div class="swap-input-wrap">
+      <div class="top"><span>From</span><span id="from-chain-label">Chain ID</span></div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <input id="swap-from-amount" type="number" placeholder="0.0" style="font-size:1.5rem;font-weight:700;background:transparent;border:none;width:60%">
+        <input id="swap-from-token" placeholder="Token address" style="font-size:.8rem">
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <div class="field" style="flex:1"><label>From Chain ID</label><input id="swap-from-chain" type="number" placeholder="56" value="56"></div>
+      </div>
+    </div>
+    <div class="swap-arrow" onclick="swapDirection()">⇅</div>
+    <div class="swap-input-wrap">
+      <div class="top"><span>To</span></div>
+      <input id="swap-to-token" placeholder="To token address" style="font-size:.85rem;background:transparent;border:none;width:100%">
+      <div style="margin-top:8px">
+        <div class="field"><label>To Chain ID</label><input id="swap-to-chain" type="number" placeholder="1" value="1"></div>
+      </div>
+    </div>
+    <div style="margin-top:8px">
+      <div class="field"><label>Your Wallet Address</label><input id="swap-wallet" placeholder="0x…"></div>
+    </div>
+    <button class="btn-green" style="width:100%;margin-top:16px;padding:14px;font-size:1rem" onclick="getQuote()">Get Quote</button>
+    <div id="swap-error"></div>
+    <div id="quote-result"></div>
+  </div>
+</div>
+
+<!-- PORTFOLIO -->
+<div class="page" id="page-portfolio">
+  <div class="section-title">💼 Portfolio</div>
+  <div class="portfolio-header">
+    <div class="field"><label>Chain</label>
+      <select id="port-chain" style="width:140px">
+        <option value="ethereum">Ethereum</option><option value="bsc" selected>BSC</option>
+        <option value="polygon">Polygon</option><option value="avalanche">Avalanche</option>
+        <option value="fantom">Fantom</option><option value="arbitrum">Arbitrum</option>
+        <option value="cronos">Cronos</option><option value="optimism">Optimism</option>
+        <option value="base">Base</option><option value="solana">Solana</option>
+      </select>
+    </div>
+    <div class="field" style="flex:1;min-width:260px"><label>Wallet Address</label>
+      <input id="port-wallet" placeholder="0x…">
+    </div>
+    <button class="btn-primary" onclick="loadPortfolio()">Load</button>
+  </div>
+  <div id="port-error"></div>
+  <div id="port-results" class="token-list"></div>
+</div>
+
+<!-- CHAINS -->
+<div class="page" id="page-chains">
+  <div class="section-title">⛓️ Supported Chains</div>
+  <div id="chains-grid" class="chains-grid"></div>
+</div>
+
+</main>
+
+<script>
+const API = '';  // same origin
+let chartInstance = null, chartSeries = null, autoRefreshTimer = null;
+
+const CHAIN_META = {
+  ethereum:{name:'Ethereum',emoji:'⟠',id:1},
+  bsc:{name:'BNB Chain',emoji:'🟡',id:56},
+  polygon:{name:'Polygon',emoji:'🟣',id:137},
+  avalanche:{name:'Avalanche',emoji:'🔺',id:43114},
+  fantom:{name:'Fantom',emoji:'👻',id:250},
+  arbitrum:{name:'Arbitrum',emoji:'🔵',id:42161},
+  cronos:{name:'Cronos',emoji:'🐾',id:25},
+  optimism:{name:'Optimism',emoji:'🔴',id:10},
+  base:{name:'Base',emoji:'🔷',id:8453},
+  solana:{name:'Solana',emoji:'◎',id:1399811149}
+};
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-link').forEach(l => {
+      if (l.getAttribute('onclick') && l.getAttribute('onclick').includes("'"+id+"'")) l.classList.add('active');
+    });
+  }
+  if (id === 'chains') renderChains();
+}
+
+function fmt(n) {
+  if (n == null) return '—';
+  n = parseFloat(n);
+  if (isNaN(n)) return '—';
+  if (Math.abs(n) >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+  if (Math.abs(n) >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+  if (Math.abs(n) >= 1e3) return '$' + (n/1e3).toFixed(2) + 'K';
+  if (Math.abs(n) < 0.0001) return '$' + n.toExponential(3);
+  return '$' + n.toFixed(n < 1 ? 6 : 2);
+}
+function fmtNum(n) {
+  if (n == null) return '—';
+  n = parseFloat(n);
+  if (isNaN(n)) return '—';
+  if (Math.abs(n) >= 1e9) return (n/1e9).toFixed(2) + 'B';
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(2) + 'K';
+  return n.toFixed(4);
+}
+function fmtTime(ts) {
+  if (!ts) return '—';
+  const d = new Date(typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts);
+  return d.toLocaleTimeString();
+}
+function pct(v) {
+  if (v == null) return '';
+  const n = parseFloat(v);
+  const cls = n >= 0 ? 'up' : 'down';
+  return `<span class="${cls}">${n >= 0 ? '+' : ''}${n.toFixed(2)}%</span>`;
+}
+function statCard(label, value, change) {
+  return `<div class="stat-card"><div class="label">${label}</div><div class="value">${value}</div>${change ? `<div class="change">${change}</div>` : ''}</div>`;
+}
+function showError(id, msg) {
+  document.getElementById(id).innerHTML = `<div class="error-msg">⚠️ ${msg}</div>`;
+}
+function clearError(id) { document.getElementById(id).innerHTML = ''; }
+
+// ── CHART ──────────────────────────────────────────────────────────────────
+async function loadChart() {
+  clearError('chart-error');
+  const chain = document.getElementById('chart-chain').value;
+  const pool = document.getElementById('chart-pool').value.trim();
+  const tf = document.getElementById('chart-tf').value;
+  const limit = document.getElementById('chart-limit').value || 100;
+  if (!pool) return showError('chart-error', 'Enter a pool address');
+
+  document.getElementById('chart-container').innerHTML = '<div class="loading">Loading chart…</div>';
+  document.getElementById('chart-stats').innerHTML = '';
+
+  try {
+    const r = await fetch(`${API}/chart/${chain}/${pool}?timeframe=${tf}&limit=${limit}`);
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const data = await r.json();
+    const ohlcv = data?.data?.attributes?.ohlcv_list || [];
+    if (!ohlcv.length) throw new Error('No OHLCV data returned for this pool');
+
+    const candles = ohlcv.map(c => ({
+      time: c[0],
+      open: parseFloat(c[1]),
+      high: parseFloat(c[2]),
+      low: parseFloat(c[3]),
+      close: parseFloat(c[4]),
+      value: parseFloat(c[5])
+    })).sort((a,b) => a.time - b.time);
+
+    const container = document.getElementById('chart-container');
+    container.innerHTML = '';
+    if (chartInstance) { chartInstance.remove(); chartInstance = null; }
+
+    chartInstance = LightweightCharts.createChart(container, {
+      layout: { background: { color: '#21262d' }, textColor: '#e6edf3' },
+      grid: { vertLines: { color: '#30363d' }, horzLines: { color: '#30363d' } },
+      crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+      rightPriceScale: { borderColor: '#30363d' },
+      timeScale: { borderColor: '#30363d', timeVisible: true },
+      width: container.clientWidth,
+      height: 420
+    });
+
+    chartSeries = chartInstance.addCandlestickSeries({
+      upColor: '#3fb950', downColor: '#f85149',
+      borderUpColor: '#3fb950', borderDownColor: '#f85149',
+      wickUpColor: '#3fb950', wickDownColor: '#f85149'
+    });
+    chartSeries.setData(candles);
+
+    const volSeries = chartInstance.addHistogramSeries({
+      color: '#58a6ff', priceFormat: { type: 'volume' },
+      priceScaleId: 'vol', scaleMargins: { top: 0.8, bottom: 0 }
+    });
+    volSeries.setData(candles.map(c => ({ time: c.time, value: c.value, color: c.close >= c.open ? '#3fb95055' : '#f8514955' })));
+
+    chartInstance.timeScale().fitContent();
+    window.addEventListener('resize', () => chartInstance && chartInstance.applyOptions({ width: container.clientWidth }));
+
+    const last = candles[candles.length - 1];
+    const first = candles[0];
+    const chg = ((last.close - first.open) / first.open * 100).toFixed(2);
+    document.getElementById('chart-stats').innerHTML =
+      statCard('Price', fmt(last.close), pct(chg)) +
+      statCard('Open', fmt(last.open)) +
+      statCard('High', fmt(last.high)) +
+      statCard('Low', fmt(last.low));
+  } catch(e) {
+    document.getElementById('chart-container').innerHTML = '';
+    showError('chart-error', e.message);
+  }
+}
+
+function setTF(tf, btn) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('chart-tf').value = tf;
+  loadChart();
+}
+
+// ── TRADES ─────────────────────────────────────────────────────────────────
+async function loadTrades() {
+  clearError('trades-error');
+  const chain = document.getElementById('trades-chain').value;
+  const pool = document.getElementById('trades-pool').value.trim();
+  if (!pool) return showError('trades-error', 'Enter a pool address');
+  document.getElementById('trades-body').innerHTML = '<tr><td colspan="7" class="loading">Loading…</td></tr>';
+  try {
+    const r = await fetch(`${API}/trades/${chain}/${pool}`);
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const data = await r.json();
+    const trades = data?.data || [];
+    if (!trades.length) { document.getElementById('trades-body').innerHTML = '<tr><td colspan="7" class="loading">No trades found</td></tr>'; return; }
+    document.getElementById('trades-body').innerHTML = trades.slice(0, 50).map(t => {
+      const a = t.attributes || {};
+      const isBuy = a.kind === 'buy';
+      const txHash = a.tx_hash || '';
+      const shortTx = txHash ? txHash.slice(0,8)+'…' : '—';
+      return `<tr>
+        <td><span class="badge ${isBuy ? 'badge-buy' : 'badge-sell'}">${isBuy ? '▲ BUY' : '▼ SELL'}</span></td>
+        <td>${fmt(a.price_from_in_usd || a.price_to_in_usd)}</td>
+        <td>${fmtNum(a.from_token_amount)}</td>
+        <td>${fmtNum(a.to_token_amount)}</td>
+        <td>${fmt(a.volume_in_usd)}</td>
+        <td>${fmtTime(a.block_timestamp)}</td>
+        <td>${txHash ? `<a href="#" title="${txHash}">${shortTx}</a>` : '—'}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) { showError('trades-error', e.message); }
+}
+
+let _autoRefresh = false;
+function startAutoRefresh() {
+  _autoRefresh = !_autoRefresh;
+  if (_autoRefresh) {
+    loadTrades();
+    autoRefreshTimer = setInterval(loadTrades, 5000);
+  } else {
+    clearInterval(autoRefreshTimer);
+  }
+}
+
+// ── TOKEN ──────────────────────────────────────────────────────────────────
+async function loadToken() {
+  clearError('token-error');
+  const chain = document.getElementById('token-chain').value;
+  const addr = document.getElementById('token-addr').value.trim();
+  if (!addr) return showError('token-error', 'Enter a token address');
+  document.getElementById('token-stats').innerHTML = '<div class="loading">Loading…</div>';
+  document.getElementById('token-pairs').innerHTML = '';
+  try {
+    const r = await fetch(`${API}/token/${chain}/${addr}`);
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const data = await r.json();
+    const pairs = data?.pairs || [];
+    if (!pairs.length) throw new Error('No data found for this token');
+    const p = pairs[0];
+    const base = p.baseToken || {};
+    const stats = p;
+    document.getElementById('token-stats').innerHTML =
+      statCard('Price USD', fmt(stats.priceUsd), pct(stats.priceChange?.h24)) +
+      statCard('24h Volume', fmt(stats.volume?.h24)) +
+      statCard('Liquidity', fmt(stats.liquidity?.usd)) +
+      statCard('Market Cap', fmt(stats.marketCap || stats.fdv));
+
+    document.getElementById('token-pairs').innerHTML = `
+      <div class="section-title" style="margin-top:20px">Trading Pairs (${pairs.length})</div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Pair</th><th>DEX</th><th>Chain</th><th>Price</th><th>24h Vol</th><th>Liquidity</th><th>5m</th><th>1h</th><th>24h</th></tr></thead>
+        <tbody>${pairs.map(pair => `<tr>
+          <td><div class="pair-row">
+            <span class="token-icon">${(pair.baseToken?.symbol||'?')[0]}</span>
+            <div><div style="font-weight:600">${pair.baseToken?.symbol||'?'}/${pair.quoteToken?.symbol||'?'}</div>
+            <div style="font-size:.72rem;color:var(--muted)">${(pair.pairAddress||'').slice(0,10)}…</div></div>
+          </div></td>
+          <td>${pair.dexId||'—'}</td>
+          <td><span class="badge badge-chain">${pair.chainId||'—'}</span></td>
+          <td>${fmt(pair.priceUsd)}</td>
+          <td>${fmt(pair.volume?.h24)}</td>
+          <td>${fmt(pair.liquidity?.usd)}</td>
+          <td>${pct(pair.priceChange?.m5)||'—'}</td>
+          <td>${pct(pair.priceChange?.h1)||'—'}</td>
+          <td>${pct(pair.priceChange?.h24)||'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`;
+  } catch(e) { document.getElementById('token-stats').innerHTML = ''; showError('token-error', e.message); }
+}
+
+// ── SEARCH ─────────────────────────────────────────────────────────────────
+async function doSearch() {
+  clearError('search-error');
+  const q = document.getElementById('search-q').value.trim();
+  if (q.length < 2) return showError('search-error', 'Enter at least 2 characters');
+  document.getElementById('search-results').innerHTML = '<div class="loading">Searching…</div>';
+  try {
+    const r = await fetch(`${API}/search?q=${encodeURIComponent(q)}`);
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const data = await r.json();
+    const pairs = data?.pairs || [];
+    if (!pairs.length) { document.getElementById('search-results').innerHTML = '<div class="loading">No results found</div>'; return; }
+    document.getElementById('search-results').innerHTML = pairs.slice(0,24).map(p => `
+      <div class="token-card" onclick="openToken('${p.chainId}','${p.baseToken?.address}')">
+        <div class="t-header">
+          <span class="token-icon">${(p.baseToken?.symbol||'?')[0]}</span>
+          <div><div class="t-name">${p.baseToken?.name||'Unknown'}</div>
+          <div class="t-symbol">${p.baseToken?.symbol||'?'} / ${p.quoteToken?.symbol||'?'}</div></div>
+        </div>
+        <div class="t-price">${fmt(p.priceUsd)} ${pct(p.priceChange?.h24)}</div>
+        <div class="t-stats">
+          <span>Vol ${fmt(p.volume?.h24)}</span>
+          <span>Liq ${fmt(p.liquidity?.usd)}</span>
+          <span class="badge badge-chain">${p.chainId||'?'}</span>
+        </div>
+      </div>`).join('');
+  } catch(e) { document.getElementById('search-results').innerHTML = ''; showError('search-error', e.message); }
+}
+
+function openToken(chain, addr) {
+  document.getElementById('token-chain').value = chain;
+  document.getElementById('token-addr').value = addr;
+  showPage('token', null);
+  loadToken();
+}
+
+function quickSearch() {
+  const q = document.getElementById('global-search').value.trim();
+  if (!q) return;
+  document.getElementById('search-q').value = q;
+  showPage('search', null);
+  doSearch();
+}
+
+// ── SWAP ───────────────────────────────────────────────────────────────────
+async function getQuote() {
+  clearError('swap-error');
+  document.getElementById('quote-result').innerHTML = '';
+  const fromChain = document.getElementById('swap-from-chain').value;
+  const toChain = document.getElementById('swap-to-chain').value;
+  const fromToken = document.getElementById('swap-from-token').value.trim();
+  const toToken = document.getElementById('swap-to-token').value.trim();
+  const amount = document.getElementById('swap-from-amount').value;
+  const wallet = document.getElementById('swap-wallet').value.trim();
+  if (!fromChain || !toChain || !fromToken || !toToken || !amount || !wallet)
+    return showError('swap-error', 'Fill all fields');
+  const amountWei = BigInt(Math.floor(parseFloat(amount) * 1e18)).toString();
+  document.getElementById('quote-result').innerHTML = '<div class="loading">Fetching quote…</div>';
+  try {
+    const url = `${API}/swap/quote?from_chain=${fromChain}&to_chain=${toChain}&from_token=${fromToken}&to_token=${toToken}&from_amount=${amountWei}&from_address=${wallet}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const q = await r.json();
+    const est = q.estimate || {};
+    const tool = q.toolDetails || {};
+    document.getElementById('quote-result').innerHTML = `
+      <div class="quote-box">
+        <div style="font-weight:600;margin-bottom:12px">Quote via ${tool.name || q.tool || 'LiFi'}</div>
+        <div class="quote-row"><span>From Amount</span><span>${fmtNum(est.fromAmount / 1e18)} tokens</span></div>
+        <div class="quote-row"><span>To Amount</span><span>${fmtNum(est.toAmount / 1e18)} tokens</span></div>
+        <div class="quote-row"><span>To Amount (min)</span><span>${fmtNum(est.toAmountMin / 1e18)}</span></div>
+        <div class="quote-row"><span>Execution Time</span><span>${est.executionDuration || '—'}s</span></div>
+        <div class="quote-row"><span>Gas Cost</span><span>${fmt(est.gasCosts?.[0]?.amountUSD)}</span></div>
+        <div class="quote-row"><span>Fee Cost</span><span>${fmt(est.feeCosts?.[0]?.amountUSD)}</span></div>
+        <div class="quote-row"><span>Route</span><span>${(q.includedSteps||[]).map(s=>s.toolDetails?.name||s.tool).join(' → ') || '—'}</span></div>
+      </div>`;
+  } catch(e) { document.getElementById('quote-result').innerHTML = ''; showError('swap-error', e.message); }
+}
+
+function swapDirection() {
+  const fc = document.getElementById('swap-from-chain');
+  const tc = document.getElementById('swap-to-chain');
+  const ft = document.getElementById('swap-from-token');
+  const tt = document.getElementById('swap-to-token');
+  [fc.value, tc.value] = [tc.value, fc.value];
+  [ft.value, tt.value] = [tt.value, ft.value];
+}
+
+// ── PORTFOLIO ──────────────────────────────────────────────────────────────
+async function loadPortfolio() {
+  clearError('port-error');
+  const chain = document.getElementById('port-chain').value;
+  const wallet = document.getElementById('port-wallet').value.trim();
+  if (!wallet) return showError('port-error', 'Enter a wallet address');
+  document.getElementById('port-results').innerHTML = '<div class="loading">Loading…</div>';
+  try {
+    const r = await fetch(`${API}/portfolio/${chain}/${wallet}`);
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    const data = await r.json();
+    const pairs = data?.pairs || [];
+    if (!pairs.length) { document.getElementById('port-results').innerHTML = '<div class="loading">No token data found for this address</div>'; return; }
+    document.getElementById('port-results').innerHTML = pairs.slice(0,24).map(p => `
+      <div class="token-card">
+        <div class="t-header">
+          <span class="token-icon">${(p.baseToken?.symbol||'?')[0]}</span>
+          <div><div class="t-name">${p.baseToken?.name||'Unknown'}</div>
+          <div class="t-symbol">${p.baseToken?.symbol||'?'} / ${p.quoteToken?.symbol||'?'}</div></div>
+        </div>
+        <div class="t-price">${fmt(p.priceUsd)} ${pct(p.priceChange?.h24)}</div>
+        <div class="t-stats">
+          <span>Vol ${fmt(p.volume?.h24)}</span>
+          <span>Liq ${fmt(p.liquidity?.usd)}</span>
+          <span class="badge badge-chain">${p.chainId||'?'}</span>
+        </div>
+      </div>`).join('');
+  } catch(e) { document.getElementById('port-results').innerHTML = ''; showError('port-error', e.message); }
+}
+
+// ── CHAINS ─────────────────────────────────────────────────────────────────
+function renderChains() {
+  document.getElementById('chains-grid').innerHTML = Object.entries(CHAIN_META).map(([key, c]) => `
+    <div class="chain-card" onclick="document.getElementById('chart-chain').value='${key}';showPage('chart',null);loadChart()">
+      <div class="chain-emoji">${c.emoji}</div>
+      <div class="chain-name">${c.name}</div>
+      <div class="chain-id">Chain ID: ${c.id}</div>
+    </div>`).join('');
+}
+
+// ── TICKER ─────────────────────────────────────────────────────────────────
+async function loadTicker() {
+  try {
+    const r = await fetch(`${API}/search?q=ETH`);
+    if (!r.ok) return;
+    const data = await r.json();
+    const pairs = (data?.pairs || []).slice(0, 10);
+    if (!pairs.length) return;
+    const items = pairs.map(p =>
+      `<span class="ticker-item"><span class="name">${p.baseToken?.symbol||'?'}/${p.quoteToken?.symbol||'?'}</span><span class="price">${fmt(p.priceUsd)}</span>${pct(p.priceChange?.h24)}</span>`
+    ).join('');
+    document.getElementById('ticker').innerHTML = items + items; // duplicate for seamless loop
+  } catch(e) {}
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+loadTicker();
+setInterval(loadTicker, 60000);
+</script>
+</body>
+</html>

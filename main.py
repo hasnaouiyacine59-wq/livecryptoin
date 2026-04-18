@@ -1,11 +1,16 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import httpx
+import os
 
 app = FastAPI(title="LiveCryptoIn API")
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+if os.path.isdir("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
 GECKO = "https://api.geckoterminal.com/api/v2"
 DEXSCREENER = "https://api.dexscreener.com/latest/dex"
@@ -34,6 +39,11 @@ async def get(url: str, params: dict = None):
 
 @app.get("/", response_class=HTMLResponse)
 def root():
+    try:
+        with open("static/index.html") as f:
+            return f.read()
+    except FileNotFoundError:
+        pass
     return """<!DOCTYPE html>
 <html lang="en">
 <head>
