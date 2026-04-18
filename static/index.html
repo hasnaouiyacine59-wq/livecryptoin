@@ -214,13 +214,13 @@ tr:hover td{background:var(--bg3)}
 .tf-btn{padding:4px 10px;font-size:.78rem;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer}
 .tf-btn.active{background:var(--blue);color:#0d1117;border-color:var(--blue)}
 /* ── AD SLOT ── */
-.ad-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;max-width:1400px;margin:0 auto;min-height:60px}
+.ad-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0;max-width:1400px;margin:0 auto;min-height:82px}
 .ad-banner .ad-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--border);border-radius:3px;padding:1px 5px;flex-shrink:0}
 .ad-banner .ad-body{flex:1;display:flex;align-items:center;gap:14px}
-.ad-banner .ad-icon{font-size:1.6rem;flex-shrink:0}
-.ad-banner .ad-text strong{font-size:.9rem;color:var(--text)}
-.ad-banner .ad-text p{font-size:.78rem;color:var(--muted);margin-top:2px}
-.ad-banner .ad-cta{background:var(--blue);color:#0d1117;border:none;border-radius:6px;padding:7px 16px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.ad-banner .ad-icon{font-size:2.2rem;flex-shrink:0}
+.ad-banner .ad-text strong{font-size:1rem;color:var(--text)}
+.ad-banner .ad-text p{font-size:.83rem;color:var(--muted);margin-top:2px}
+.ad-banner .ad-cta{background:var(--blue);color:#0d1117;border:none;border-radius:8px;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .ad-banner .ad-cta:hover{opacity:.85}
 /* placeholder for real ad network (Google AdSense / Carbon etc.) */
 .ad-adsense{display:block;width:100%;min-height:60px;text-align:center}
@@ -265,7 +265,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
 </nav>
 
 <!-- AD SLOT — shared template, refreshes on every page visit -->
-<div id="ad-slot" style="background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:56px;z-index:99"></div>
+<div id="ad-slot" style="background:var(--bg2);border-bottom:1px solid var(--border);padding:4px 24px;position:sticky;top:56px;z-index:99;min-height:90px"></div>
 
 <!-- TICKER -->
 <div class="ticker-bar"><div class="ticker-inner" id="ticker">Loading market data…</div></div>
@@ -574,30 +574,12 @@ let _lastAdIdx = -1;
 function renderAd(pageId) {
   const slot = document.getElementById('ad-slot');
   if (!slot) return;
-
-  // Real ad network — uncomment and configure when ready
-  if (USE_ADSENSE) {
-    slot.innerHTML = `<div class="ad-banner"><span class="ad-label">Ad</span>
-      <ins class="adsbygoogle ad-adsense" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="horizontal" data-full-width-responsive="true"></ins></div>`;
-    if (window.adsbygoogle) (window.adsbygoogle = window.adsbygoogle || []).push({});
-    return;
-  }
-
-  // Self-promo fallback — pick a different ad than last time
-  let idx;
-  do { idx = Math.floor(Math.random() * AD_UNITS.length); } while (idx === _lastAdIdx && AD_UNITS.length > 1);
-  _lastAdIdx = idx;
-  const ad = AD_UNITS[idx];
-
-  slot.innerHTML = `<div class="ad-banner">
-    <span class="ad-label">Sponsored</span>
-    <div class="ad-body">
-      <span class="ad-icon">${ad.icon}</span>
-      <div class="ad-text"><strong>${ad.title}</strong><p>${ad.body}</p></div>
-    </div>
-    <button class="ad-cta" id="ad-cta-btn">${ad.cta} →</button>
+  // Force iframe reload on every page visit by rebuilding with cache-bust
+  slot.innerHTML = `<div style="width:100%;margin:auto;position:relative;z-index:99998;padding:6px 0">
+    <iframe data-aa='2434924' src='//acceptable.a-ads.com/2434924/?size=Adaptive&t=${Date.now()}'
+      style='border:0;padding:0;width:70%;height:auto;overflow:hidden;display:block;margin:auto'></iframe>
   </div>`;
-  document.getElementById('ad-cta-btn').onclick = ad.action;
+}
 }
 
 function fmt(n) {
