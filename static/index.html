@@ -214,16 +214,7 @@ tr:hover td{background:var(--bg3)}
 .tf-btn{padding:4px 10px;font-size:.78rem;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer}
 .tf-btn.active{background:var(--blue);color:#0d1117;border-color:var(--blue)}
 /* ── AD SLOT ── */
-.ad-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0;max-width:1400px;margin:0 auto;min-height:82px}
-.ad-banner .ad-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--border);border-radius:3px;padding:1px 5px;flex-shrink:0}
-.ad-banner .ad-body{flex:1;display:flex;align-items:center;gap:14px}
-.ad-banner .ad-icon{font-size:2.2rem;flex-shrink:0}
-.ad-banner .ad-text strong{font-size:1rem;color:var(--text)}
-.ad-banner .ad-text p{font-size:.83rem;color:var(--muted);margin-top:2px}
-.ad-banner .ad-cta{background:var(--blue);color:#0d1117;border:none;border-radius:8px;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
-.ad-banner .ad-cta:hover{opacity:.85}
 /* placeholder for real ad network (Google AdSense / Carbon etc.) */
-.ad-adsense{display:block;width:100%;min-height:60px;text-align:center}
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24px 24px;margin-top:auto}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1200px;margin:0 auto 40px}
 .footer-brand .logo{font-size:1.2rem;font-weight:700;color:var(--blue);margin-bottom:10px}
@@ -246,6 +237,12 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
 <body>
 
 <!-- NAV -->
+<!-- BEGIN AADS AD UNIT 2434924 -->
+<div id="aads-top" style="width:100%;background:#0d1117;position:sticky;top:0;z-index:101">
+  <iframe data-aa='2434924' src='//acceptable.a-ads.com/2434924/?size=Adaptive'
+    style='border:0;padding:0;width:70%;height:auto;overflow:hidden;display:block;margin:auto'></iframe>
+</div>
+<!-- END AADS AD UNIT 2434924 -->
 <nav>
   <div class="logo"><img src="/static/logo.svg" alt="Cryptyos" style="height:32px;vertical-align:middle"> <span style="font-size:1.1rem;font-weight:800;letter-spacing:-.5px">Cryptyos</span></div>
   <div class="nav-links">
@@ -264,8 +261,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
   </div>
 </nav>
 
-<!-- AD SLOT — shared template, refreshes on every page visit -->
-<div id="ad-slot" style="background:var(--bg2);border-bottom:1px solid var(--border);padding:4px 24px;position:sticky;top:56px;z-index:99;min-height:90px"></div>
 
 <!-- TICKER -->
 <div class="ticker-bar"><div class="ticker-inner" id="ticker">Loading market data…</div></div>
@@ -551,35 +546,6 @@ function showPage(id, el) {
     });
   }
   if (id === 'chains') renderChains();
-  renderAd(id);  // refresh ad on every page visit
-}
-
-// ── AD SLOT ────────────────────────────────────────────────────────────────
-// Self-promo ads — replace AD_UNITS entries with real network tags when ready
-// To use Google AdSense: set USE_ADSENSE=true and fill your client/slot IDs
-const USE_ADSENSE = false;
-const ADSENSE_CLIENT = 'ca-pub-XXXXXXXXXXXXXXXX';
-const ADSENSE_SLOT   = '0000000000';
-
-const AD_UNITS = [
-  { icon:'📈', title:'Track Any DEX Token Live', body:'Search any token across 10 chains — price, volume, liquidity in real time.', cta:'Search Now', action:()=>showPage('search',null) },
-  { icon:'🔄', title:'Cross-Chain Swap in Seconds', body:'Get the best swap & bridge quotes via LiFi aggregator. No wallet needed to quote.', cta:'Get Quote', action:()=>showPage('swap',null) },
-  { icon:'💼', title:'Check Your Portfolio', body:'Enter any wallet address to see token pair data across all supported chains.', cta:'View Portfolio', action:()=>showPage('portfolio',null) },
-  { icon:'⚡', title:'Live Trade Feed', body:'Watch real-time buys and sells for any DEX pool. Auto-refreshes every 5 seconds.', cta:'Open Trades', action:()=>showPage('trades',null) },
-  { icon:'🚀', title:'Top Gainers Right Now', body:'See which tokens are pumping hardest across all chains in the last 24 hours.', cta:'See Gainers', action:()=>showPage('home',null) },
-  { icon:'⛓️', title:'10 Blockchains Supported', body:'Ethereum, BSC, Solana, Polygon, Arbitrum, Base, Avalanche and more — all free.', cta:'View Chains', action:()=>showPage('chains',null) },
-];
-
-let _lastAdIdx = -1;
-function renderAd(pageId) {
-  const slot = document.getElementById('ad-slot');
-  if (!slot) return;
-  // Force iframe reload on every page visit by rebuilding with cache-bust
-  slot.innerHTML = `<div style="width:100%;margin:auto;position:relative;z-index:99998;padding:6px 0">
-    <iframe data-aa='2434924' src='//acceptable.a-ads.com/2434924/?size=Adaptive&t=${Date.now()}'
-      style='border:0;padding:0;width:70%;height:auto;overflow:hidden;display:block;margin:auto'></iframe>
-  </div>`;
-}
 }
 
 function fmt(n) {
@@ -1110,7 +1076,15 @@ loadTicker();
 setInterval(loadTicker, 60000);
 loadHome();
 setInterval(loadHome, 30000);
-renderAd('home');
+// Pin nav below the A-ADS banner
+(function() {
+  const ad = document.getElementById('aads-top');
+  const nav = document.querySelector('nav');
+  if (!ad || !nav) return;
+  const pin = () => nav.style.top = ad.offsetHeight + 'px';
+  pin();
+  new ResizeObserver(pin).observe(ad);
+})();
 </script>
 </body>
 </html>
