@@ -166,6 +166,28 @@ tr:hover td{background:var(--bg3)}
 .ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 24px;overflow:hidden;white-space:nowrap;font-size:.8rem}
 .ticker-inner{display:inline-flex;gap:32px;animation:ticker 30s linear infinite}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.home-token-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.htc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.htc:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 8px 24px #0006}
+.htc .htc-rank{position:absolute;top:12px;right:12px;font-size:.7rem;color:var(--muted);font-weight:700;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:2px 8px}
+.htc .htc-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.htc .htc-icon{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;color:var(--blue);flex-shrink:0}
+.htc .htc-name{font-weight:700;font-size:.95rem;line-height:1.2}
+.htc .htc-sub{font-size:.72rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px}
+.htc .htc-price{font-size:1.15rem;font-weight:800;font-family:monospace;margin-bottom:6px}
+.htc .htc-change{font-size:1rem;font-weight:700;margin-bottom:10px}
+.htc .htc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.75rem;margin-bottom:10px}
+.htc .htc-stat{background:var(--bg3);border-radius:6px;padding:6px 8px}
+.htc .htc-stat .s-label{color:var(--muted);margin-bottom:2px}
+.htc .htc-stat .s-val{font-weight:600;color:var(--text)}
+.htc .htc-spark{margin-top:4px}
+.home-tab{background:transparent;border:none;color:var(--muted);padding:6px 14px;border-radius:6px;font-size:.82rem;font-weight:500;cursor:pointer;transition:.15s}
+.home-tab.active{background:var(--blue);color:#0d1117;font-weight:700}
+.home-tab:hover:not(.active){color:var(--text);background:var(--bg3)}
+.stats-pill{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:.8rem;display:flex;flex-direction:column;gap:2px;min-width:120px}
+.stats-pill .sp-label{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+.stats-pill .sp-val{font-weight:700;font-size:.95rem}
 .ticker-item{display:inline-flex;align-items:center;gap:6px}
 .ticker-item .name{color:var(--muted)}
 .ticker-item .price{font-weight:600}
@@ -238,24 +260,35 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
 
 <!-- HOME -->
 <div class="page active" id="page-home">
-  <div class="home-hero">
-    <h1>Realtime <span>DEX Data</span> Platform</h1>
-    <p>Live charts, trades, token info, swap quotes and portfolio tracking across 10 blockchains — powered by GeckoTerminal, DexScreener & LiFi.</p>
-    <div class="actions">
-      <button class="btn-primary" onclick="showPage('chart',null)">📈 Open Chart</button>
-      <button class="btn-ghost" onclick="showPage('swap',null)">🔄 Swap Tokens</button>
-      <button class="btn-ghost" onclick="showPage('search',null)">🔍 Search Tokens</button>
+
+  <!-- Stats bar -->
+  <div id="home-stats-bar" style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap"></div>
+
+  <!-- Tabs -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:4px">
+      <button class="home-tab active" onclick="setHomeTab('gainers',this)">🚀 Top Gainers</button>
+      <button class="home-tab" onclick="setHomeTab('losers',this)">📉 Top Losers</button>
+      <button class="home-tab" onclick="setHomeTab('volume',this)">🔥 Top Volume</button>
+      <button class="home-tab" onclick="setHomeTab('trending',this)">⭐ Trending</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="home-live-dot" style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite"></span>
+      <span id="home-updated" style="font-size:.75rem;color:var(--muted)">Loading…</span>
+      <select id="home-chain-filter" style="width:130px;font-size:.8rem" onchange="loadHome()">
+        <option value="">All Chains</option>
+        <option value="ethereum">Ethereum</option>
+        <option value="bsc">BSC</option>
+        <option value="solana">Solana</option>
+        <option value="base">Base</option>
+        <option value="arbitrum">Arbitrum</option>
+        <option value="polygon">Polygon</option>
+      </select>
     </div>
   </div>
-  <div class="features">
-    <div class="feature-card"><div class="icon">📈</div><h3>Live OHLCV Charts</h3><p>Candlestick charts for any DEX pool across 10 chains with minute/hour/day timeframes.</p></div>
-    <div class="feature-card"><div class="icon">⚡</div><h3>Real-time Trades</h3><p>Stream of recent buy/sell trades for any pool with amounts, prices and timestamps.</p></div>
-    <div class="feature-card"><div class="icon">🪙</div><h3>Token Info</h3><p>Price, volume, liquidity, market cap and all trading pairs for any token.</p></div>
-    <div class="feature-card"><div class="icon">🔄</div><h3>Cross-chain Swap</h3><p>Get best swap & bridge quotes across chains via LiFi aggregator.</p></div>
-    <div class="feature-card"><div class="icon">💼</div><h3>Portfolio</h3><p>View token holdings and pair data for any wallet address.</p></div>
-    <div class="feature-card"><div class="icon">🔍</div><h3>Token Search</h3><p>Search any token or pair by name, symbol or contract address.</p></div>
-    <div class="feature-card"><div class="icon">⛓️</div><h3>10 Chains</h3><p>Ethereum, BNB, Polygon, Avalanche, Fantom, Arbitrum, Cronos, Optimism, Base, Solana.</p></div>
-    <div class="feature-card"><div class="icon">🆓</div><h3>No API Keys</h3><p>All data sources are free and public — no registration or keys required.</p></div>
+
+  <div id="home-grid" class="home-token-grid">
+    <div class="loading" style="grid-column:1/-1;padding:60px">Loading top gainers…</div>
   </div>
 </div>
 
@@ -857,6 +890,132 @@ async function loadTicker() {
   } catch(e) {}
 }
 
+// ── HOME ───────────────────────────────────────────────────────────────────
+let _homeTab = 'gainers';
+let _homeTimer = null;
+
+// Sparkline SVG from price change (matches crypto-analytics Sparkline.tsx logic)
+function sparklineSVG(change24h) {
+  const up = change24h >= 0;
+  const seed = Math.abs(change24h) % 10;
+  const pts = up
+    ? [[0,32],[16,28-seed*.4],[32,22+seed*.3],[48,18-seed*.5],[64,14+seed*.2],[80,10-seed*.3],[100,6]]
+    : [[0,6],[16,10+seed*.3],[32,14-seed*.2],[48,20+seed*.4],[64,24-seed*.3],[80,28+seed*.2],[100,32]];
+  const line = pts.map(([x,y],i) => `${i===0?'M':'L'}${x},${y}`).join(' ');
+  const area = `${line} L100,38 L0,38 Z`;
+  const color = up ? '#3fb950' : '#f85149';
+  const gid = `hsg${up?'u':'d'}${Math.round(seed)}`;
+  return `<svg width="100%" height="38" viewBox="0 0 100 38" fill="none" preserveAspectRatio="none">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#${gid})"/>
+    <path d="${line}" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function setHomeTab(tab, btn) {
+  _homeTab = tab;
+  document.querySelectorAll('.home-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadHome();
+}
+
+async function loadHome() {
+  const chainFilter = document.getElementById('home-chain-filter').value;
+  const grid = document.getElementById('home-grid');
+  grid.innerHTML = '<div class="loading" style="grid-column:1/-1;padding:60px">Loading…</div>';
+
+  try {
+    // Fetch broad pairs from DexScreener via our /search endpoint
+    const queries = chainFilter
+      ? [chainFilter === 'solana' ? 'SOL' : chainFilter === 'bsc' ? 'BNB' : 'USDT']
+      : ['USDT','USDC','WETH','WBNB'];
+
+    const results = await Promise.allSettled(queries.map(q => fetch(`${API}/search?q=${encodeURIComponent(q)}`).then(r=>r.json())));
+    const seen = new Set();
+    let pairs = [];
+    for (const r of results) {
+      if (r.status === 'fulfilled') {
+        for (const p of (r.value?.pairs || [])) {
+          if (!seen.has(p.pairAddress) && p.priceUsd && p.priceChange?.h24 != null) {
+            seen.add(p.pairAddress);
+            pairs.push(p);
+          }
+        }
+      }
+    }
+
+    // Also fetch trending boosted tokens from DexScreener
+    if (_homeTab === 'trending') {
+      const tr = await fetch(`${API}/trending`).then(r=>r.json()).catch(()=>[]);
+      // trending metas don't have pair data, use pairs sorted by volume as proxy
+      _homeTab = 'volume'; // fallback to volume for trending display
+    }
+
+    // Filter by chain
+    if (chainFilter) pairs = pairs.filter(p => p.chainId === chainFilter);
+
+    // Sort by tab
+    if (_homeTab === 'gainers')  pairs.sort((a,b) => (b.priceChange?.h24||0) - (a.priceChange?.h24||0));
+    if (_homeTab === 'losers')   pairs.sort((a,b) => (a.priceChange?.h24||0) - (b.priceChange?.h24||0));
+    if (_homeTab === 'volume')   pairs.sort((a,b) => (b.volume?.h24||0) - (a.volume?.h24||0));
+    if (_homeTab === 'trending') pairs.sort((a,b) => (b.volume?.h24||0) - (a.volume?.h24||0));
+
+    const top = pairs.slice(0, 20);
+    if (!top.length) { grid.innerHTML = '<div class="loading" style="grid-column:1/-1">No data found</div>'; return; }
+
+    // Stats bar
+    const totalVol = pairs.reduce((s,p) => s + (p.volume?.h24||0), 0);
+    const avgChg = pairs.slice(0,20).reduce((s,p) => s + (p.priceChange?.h24||0), 0) / Math.min(20, pairs.length);
+    document.getElementById('home-stats-bar').innerHTML = `
+      <div class="stats-pill"><div class="sp-label">Pairs loaded</div><div class="sp-val">${pairs.length}</div></div>
+      <div class="stats-pill"><div class="sp-label">Total 24h Vol</div><div class="sp-val">${fmt(totalVol)}</div></div>
+      <div class="stats-pill"><div class="sp-label">Avg 24h Change</div><div class="sp-val ${avgChg>=0?'up':'down'}">${avgChg>=0?'+':''}${avgChg.toFixed(2)}%</div></div>
+    `;
+
+    document.getElementById('home-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+
+    grid.innerHTML = top.map((p, i) => {
+      const chg = p.priceChange?.h24 || 0;
+      const up = chg >= 0;
+      const sym = p.baseToken?.symbol || '?';
+      const icon = p.info?.imageUrl;
+      const iconHtml = icon
+        ? `<img src="${icon}" style="width:36px;height:36px;border-radius:50%;object-fit:cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : '';
+      const fallback = `<div class="htc-icon" style="${icon?'display:none':'display:flex'}">${sym[0]}</div>`;
+
+      return `<div class="htc" onclick="openToken('${p.chainId}','${p.baseToken?.address}')">
+        <div class="htc-rank">#${i+1}</div>
+        <div class="htc-header">
+          <div style="position:relative;flex-shrink:0">${iconHtml}${fallback}</div>
+          <div>
+            <div class="htc-name">${sym}<span style="color:var(--muted);font-weight:400">/${p.quoteToken?.symbol||'?'}</span></div>
+            <div class="htc-sub">
+              <span style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1px 6px">${p.chainId}</span>
+              <span>${p.dexId||''}</span>
+            </div>
+          </div>
+        </div>
+        <div class="htc-price">${fmt(p.priceUsd)}</div>
+        <div class="htc-change ${up?'up':'down'}" style="font-size:1.1rem">${up?'▲':'▼'} ${Math.abs(chg).toFixed(2)}%</div>
+        <div class="htc-stats">
+          <div class="htc-stat"><div class="s-label">24h Volume</div><div class="s-val">${fmt(p.volume?.h24)}</div></div>
+          <div class="htc-stat"><div class="s-label">Liquidity</div><div class="s-val">${fmt(p.liquidity?.usd)}</div></div>
+          <div class="htc-stat"><div class="s-label">Mkt Cap</div><div class="s-val">${fmt(p.marketCap||p.fdv)}</div></div>
+          <div class="htc-stat"><div class="s-label">1h Change</div><div class="s-val ${(p.priceChange?.h1||0)>=0?'up':'down'}">${(p.priceChange?.h1||0)>=0?'+':''}${(p.priceChange?.h1||0).toFixed(2)}%</div></div>
+        </div>
+        <div class="htc-spark">${sparklineSVG(chg)}</div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    grid.innerHTML = `<div class="error-msg" style="grid-column:1/-1">⚠️ ${e.message}</div>`;
+  }
+}
+
 // ── MODALS ─────────────────────────────────────────────────────────────────
 const MODAL_CONTENT = {
   disclaimer: `<h2 style="margin-bottom:16px;color:var(--yellow)">⚠️ Disclaimer</h2>
@@ -905,6 +1064,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 // ── INIT ───────────────────────────────────────────────────────────────────
 loadTicker();
 setInterval(loadTicker, 60000);
+loadHome();
+setInterval(loadHome, 30000);
 </script>
 </body>
 </html>
