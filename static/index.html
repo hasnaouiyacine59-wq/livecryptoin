@@ -1,9 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LiveCryptoIn</title>
+
+<!-- Primary SEO -->
+<title>LiveCryptoIn — Realtime DEX Crypto Data, Charts & Swap</title>
+<meta name="description" content="LiveCryptoIn provides realtime DEX data across 10 blockchains — live OHLCV charts, token prices, trades, liquidity, cross-chain swap quotes and portfolio tracking. Free, no API key required.">
+<meta name="keywords" content="crypto DEX data, realtime cryptocurrency charts, token price, DeFi analytics, OHLCV chart, decentralized exchange, BSC, Ethereum, Solana, Polygon, Avalanche, Arbitrum, Base, cross-chain swap, crypto portfolio tracker, live crypto prices, DexScreener, GeckoTerminal, crypto investment, blockchain data API">
+<meta name="author" content="LiveCryptoIn">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="theme-color" content="#0d1117">
+<link rel="canonical" href="https://livecryptoin.com/">
+
+<!-- Open Graph (Facebook, LinkedIn, Discord, Telegram) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LiveCryptoIn">
+<meta property="og:title" content="LiveCryptoIn — Realtime DEX Crypto Data, Charts & Swap">
+<meta property="og:description" content="Live OHLCV charts, token prices, trades, liquidity and cross-chain swap quotes across Ethereum, BSC, Solana, Polygon and 6 more chains. Free, no signup.">
+<meta property="og:url" content="https://livecryptoin.com/">
+<meta property="og:image" content="https://livecryptoin.com/static/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="LiveCryptoIn — Realtime DEX Data Platform">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@livecryptoin">
+<meta name="twitter:creator" content="@livecryptoin">
+<meta name="twitter:title" content="LiveCryptoIn — Realtime DEX Crypto Data, Charts & Swap">
+<meta name="twitter:description" content="Live OHLCV charts, token prices, trades and cross-chain swap quotes across 10 blockchains. Free, no API key.">
+<meta name="twitter:image" content="https://livecryptoin.com/static/og-image.png">
+
+<!-- Schema.org Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://livecryptoin.com/#website",
+      "url": "https://livecryptoin.com/",
+      "name": "LiveCryptoIn",
+      "description": "Realtime DEX crypto data platform — live charts, token prices, trades, swap quotes and portfolio tracking across 10 blockchains.",
+      "inLanguage": "en-US",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://livecryptoin.com/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://livecryptoin.com/#organization",
+      "name": "LiveCryptoIn",
+      "url": "https://livecryptoin.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://livecryptoin.com/static/logo.png"
+      },
+      "sameAs": [
+        "https://twitter.com/livecryptoin",
+        "https://t.me/livecryptoin"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://livecryptoin.com/#app",
+      "name": "LiveCryptoIn",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "url": "https://livecryptoin.com/",
+      "description": "Realtime DEX data platform for crypto investors and traders. Live OHLCV charts, token analytics, cross-chain swap quotes and portfolio tracking across Ethereum, BSC, Solana, Polygon, Avalanche, Arbitrum, Base, Optimism, Fantom and Cronos.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Realtime OHLCV candlestick charts",
+        "Live DEX trade feed",
+        "Token price and liquidity data",
+        "Cross-chain swap and bridge quotes",
+        "Crypto portfolio tracker",
+        "Token and pair search",
+        "10 blockchain networks supported"
+      ]
+    }
+  ]
+}
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -101,12 +189,23 @@ tr:hover td{background:var(--bg3)}
 .timeframe-btns{display:flex;gap:6px;margin-bottom:12px}
 .tf-btn{padding:4px 10px;font-size:.78rem;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer}
 .tf-btn.active{background:var(--blue);color:#0d1117;border-color:var(--blue)}
-@media(max-width:768px){
-  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
-  nav .nav-links{display:none}
-  .home-hero h1{font-size:1.8rem}
-  main{padding:16px}
-}
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24px 24px;margin-top:auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1200px;margin:0 auto 40px}
+.footer-brand .logo{font-size:1.2rem;font-weight:700;color:var(--blue);margin-bottom:10px}
+.footer-brand .logo span{color:var(--green)}
+.footer-brand p{font-size:.82rem;color:var(--muted);line-height:1.6;max-width:260px;margin-bottom:16px}
+.footer-brand .socials{display:flex;gap:10px}
+.social-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);font-size:.9rem;text-decoration:none;transition:.15s}
+.social-btn:hover{border-color:var(--blue);background:var(--bg)}
+.footer-col h4{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:14px}
+.footer-col a{display:block;font-size:.83rem;color:var(--muted);margin-bottom:8px;text-decoration:none;transition:.15s}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;gap:12px;font-size:.78rem;color:var(--muted)}
+.footer-bottom .legal{display:flex;gap:20px}
+.footer-bottom a{color:var(--muted);text-decoration:none}
+.footer-bottom a:hover{color:var(--text)}
+.badge-free{background:#1a3a2a;color:var(--green);border:1px solid #2a5a3a;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600;margin-left:6px}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}.footer-bottom{flex-direction:column;text-align:center}}
 </style>
 </head>
 <body>
@@ -319,6 +418,60 @@ tr:hover td{background:var(--bg3)}
 
 </main>
 
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">⚡Live<span>CryptoIn</span></div>
+      <p>Professional-grade realtime DEX data platform. Live charts, trades, token analytics, cross-chain swaps and portfolio tracking — all free, no API keys required.</p>
+      <div class="socials">
+        <a class="social-btn" href="#" title="Twitter/X">𝕏</a>
+        <a class="social-btn" href="#" title="Telegram">✈</a>
+        <a class="social-btn" href="#" title="Discord">💬</a>
+        <a class="social-btn" href="#" title="GitHub">⌥</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a href="#" onclick="showPage('chart',null);return false">📈 Live Chart</a>
+      <a href="#" onclick="showPage('trades',null);return false">⚡ Trades</a>
+      <a href="#" onclick="showPage('token',null);return false">🪙 Token Info</a>
+      <a href="#" onclick="showPage('search',null);return false">🔍 Search</a>
+      <a href="#" onclick="showPage('swap',null);return false">🔄 Swap / Bridge</a>
+      <a href="#" onclick="showPage('portfolio',null);return false">💼 Portfolio</a>
+    </div>
+    <div class="footer-col">
+      <h4>Data Sources</h4>
+      <a href="https://www.geckoterminal.com/dex-api" target="_blank" rel="noopener">GeckoTerminal <span class="badge-free">FREE</span></a>
+      <a href="https://docs.dexscreener.com" target="_blank" rel="noopener">DexScreener <span class="badge-free">FREE</span></a>
+      <a href="https://li.quest" target="_blank" rel="noopener">LiFi Aggregator <span class="badge-free">FREE</span></a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#" onclick="showModal('disclaimer');return false">Disclaimer</a>
+      <a href="#" onclick="showModal('privacy');return false">Privacy Policy</a>
+      <a href="#" onclick="showModal('terms');return false">Terms of Use</a>
+      <a href="/docs" target="_blank">API Docs</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 LiveCryptoIn. All rights reserved.</span>
+    <div class="legal">
+      <a href="#" onclick="showModal('disclaimer');return false">Disclaimer</a>
+      <a href="#" onclick="showModal('privacy');return false">Privacy</a>
+      <a href="#" onclick="showModal('terms');return false">Terms</a>
+    </div>
+    <span>Not financial advice. Data via GeckoTerminal, DexScreener & LiFi.</span>
+  </div>
+</footer>
+
+<!-- MODALS -->
+<div id="modal-overlay" onclick="closeModal()" style="display:none;position:fixed;inset:0;background:#000a;z-index:200;align-items:center;justify-content:center">
+  <div onclick="event.stopPropagation()" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;padding:28px;position:relative">
+    <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:4px 10px;cursor:pointer">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
 <script>
 const API = '';  // same origin
 let chartInstance = null, chartSeries = null, autoRefreshTimer = null;
@@ -520,7 +673,8 @@ async function loadToken() {
     const r = await fetch(`${API}/token/${chain}/${addr}`);
     if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
     const data = await r.json();
-    const pairs = data?.pairs || [];
+    // v1 returns array directly; legacy returns {pairs:[...]}
+    const pairs = Array.isArray(data) ? data : (data?.pairs || []);
     if (!pairs.length) throw new Error('No data found for this token');
     const p = pairs[0];
     const base = p.baseToken || {};
@@ -653,7 +807,7 @@ async function loadPortfolio() {
     const r = await fetch(`${API}/portfolio/${chain}/${wallet}`);
     if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
     const data = await r.json();
-    const pairs = data?.pairs || [];
+    const pairs = Array.isArray(data) ? data : (data?.pairs || []);
     if (!pairs.length) { document.getElementById('port-results').innerHTML = '<div class="loading">No token data found for this address</div>'; return; }
     document.getElementById('port-results').innerHTML = pairs.slice(0,24).map(p => `
       <div class="token-card">
@@ -685,17 +839,62 @@ function renderChains() {
 // ── TICKER ─────────────────────────────────────────────────────────────────
 async function loadTicker() {
   try {
-    const r = await fetch(`${API}/search?q=ETH`);
+    const r = await fetch(`${API}/trending`);
     if (!r.ok) return;
     const data = await r.json();
-    const pairs = (data?.pairs || []).slice(0, 10);
-    if (!pairs.length) return;
-    const items = pairs.map(p =>
-      `<span class="ticker-item"><span class="name">${p.baseToken?.symbol||'?'}/${p.quoteToken?.symbol||'?'}</span><span class="price">${fmt(p.priceUsd)}</span>${pct(p.priceChange?.h24)}</span>`
+    const items_raw = Array.isArray(data) ? data : [];
+    if (!items_raw.length) return;
+    const items = items_raw.slice(0, 12).map(t =>
+      `<span class="ticker-item"><span class="name">${t.name||'?'}</span><span class="price">${fmt(t.marketCap)}</span><span class="${(t.marketCapChange?.h24||0)>=0?'up':'down'}">${(t.marketCapChange?.h24||0)>=0?'▲':'▼'}${Math.abs(t.marketCapChange?.h24||0).toFixed(1)}%</span></span>`
     ).join('');
-    document.getElementById('ticker').innerHTML = items + items; // duplicate for seamless loop
+    document.getElementById('ticker').innerHTML = items + items;
   } catch(e) {}
 }
+
+// ── MODALS ─────────────────────────────────────────────────────────────────
+const MODAL_CONTENT = {
+  disclaimer: `<h2 style="margin-bottom:16px;color:var(--yellow)">⚠️ Disclaimer</h2>
+    <p style="color:var(--muted);line-height:1.7;font-size:.88rem">
+    LiveCryptoIn is a data aggregation platform for informational purposes only. Nothing on this platform constitutes financial, investment, legal or tax advice.<br><br>
+    Cryptocurrency markets are highly volatile. Past performance is not indicative of future results. You should conduct your own research and consult a qualified financial advisor before making any investment decisions.<br><br>
+    LiveCryptoIn does not hold, custody, or transmit any digital assets. Swap quotes are provided by third-party aggregators (LiFi) and LiveCryptoIn is not responsible for any losses arising from swap transactions.<br><br>
+    Market data is sourced from GeckoTerminal and DexScreener and may be delayed or inaccurate. LiveCryptoIn makes no warranties regarding data accuracy or completeness.
+    </p>`,
+  privacy: `<h2 style="margin-bottom:16px;color:var(--blue)">🔒 Privacy Policy</h2>
+    <p style="color:var(--muted);line-height:1.7;font-size:.88rem">
+    <strong style="color:var(--text)">Data We Collect</strong><br>
+    LiveCryptoIn does not collect, store or sell personal data. We do not require account registration or login.<br><br>
+    <strong style="color:var(--text)">Third-Party APIs</strong><br>
+    Queries you make (token addresses, wallet addresses) are forwarded to GeckoTerminal, DexScreener and LiFi to fetch data. Please review their respective privacy policies.<br><br>
+    <strong style="color:var(--text)">Cookies & Analytics</strong><br>
+    We do not use tracking cookies or third-party analytics scripts.<br><br>
+    <strong style="color:var(--text)">Contact</strong><br>
+    For privacy concerns, contact us via the links in the footer.
+    </p>`,
+  terms: `<h2 style="margin-bottom:16px;color:var(--green)">📄 Terms of Use</h2>
+    <p style="color:var(--muted);line-height:1.7;font-size:.88rem">
+    By using LiveCryptoIn you agree to these terms.<br><br>
+    <strong style="color:var(--text)">Permitted Use</strong><br>
+    This platform is provided for personal, non-commercial informational use. You may not scrape, resell or redistribute data obtained through this platform.<br><br>
+    <strong style="color:var(--text)">No Warranties</strong><br>
+    The platform is provided "as is" without warranties of any kind. We do not guarantee uptime, data accuracy or fitness for any particular purpose.<br><br>
+    <strong style="color:var(--text)">Limitation of Liability</strong><br>
+    LiveCryptoIn shall not be liable for any direct, indirect, incidental or consequential damages arising from use of this platform.<br><br>
+    <strong style="color:var(--text)">Changes</strong><br>
+    We reserve the right to modify these terms at any time. Continued use constitutes acceptance of updated terms.<br><br>
+    © 2026 LiveCryptoIn. All rights reserved.
+    </p>`
+};
+
+function showModal(key) {
+  document.getElementById('modal-content').innerHTML = MODAL_CONTENT[key] || '';
+  const overlay = document.getElementById('modal-overlay');
+  overlay.style.display = 'flex';
+}
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 // ── INIT ───────────────────────────────────────────────────────────────────
 loadTicker();
