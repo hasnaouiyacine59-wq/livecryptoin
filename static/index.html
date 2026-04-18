@@ -213,6 +213,17 @@ tr:hover td{background:var(--bg3)}
 .timeframe-btns{display:flex;gap:6px;margin-bottom:12px}
 .tf-btn{padding:4px 10px;font-size:.78rem;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer}
 .tf-btn.active{background:var(--blue);color:#0d1117;border-color:var(--blue)}
+/* ── AD SLOT ── */
+.ad-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;max-width:1400px;margin:0 auto;min-height:60px}
+.ad-banner .ad-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--border);border-radius:3px;padding:1px 5px;flex-shrink:0}
+.ad-banner .ad-body{flex:1;display:flex;align-items:center;gap:14px}
+.ad-banner .ad-icon{font-size:1.6rem;flex-shrink:0}
+.ad-banner .ad-text strong{font-size:.9rem;color:var(--text)}
+.ad-banner .ad-text p{font-size:.78rem;color:var(--muted);margin-top:2px}
+.ad-banner .ad-cta{background:var(--blue);color:#0d1117;border:none;border-radius:6px;padding:7px 16px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.ad-banner .ad-cta:hover{opacity:.85}
+/* placeholder for real ad network (Google AdSense / Carbon etc.) */
+.ad-adsense{display:block;width:100%;min-height:60px;text-align:center}
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24px 24px;margin-top:auto}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1200px;margin:0 auto 40px}
 .footer-brand .logo{font-size:1.2rem;font-weight:700;color:var(--blue);margin-bottom:10px}
@@ -454,6 +465,9 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
 
 </main>
 
+<!-- AD SLOT — shared template, refreshes on every page visit -->
+<div id="ad-slot" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 24px"></div>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -536,6 +550,53 @@ function showPage(id, el) {
     });
   }
   if (id === 'chains') renderChains();
+  renderAd(id);  // refresh ad on every page visit
+}
+
+// ── AD SLOT ────────────────────────────────────────────────────────────────
+// Self-promo ads — replace AD_UNITS entries with real network tags when ready
+// To use Google AdSense: set USE_ADSENSE=true and fill your client/slot IDs
+const USE_ADSENSE = false;
+const ADSENSE_CLIENT = 'ca-pub-XXXXXXXXXXXXXXXX';
+const ADSENSE_SLOT   = '0000000000';
+
+const AD_UNITS = [
+  { icon:'📈', title:'Track Any DEX Token Live', body:'Search any token across 10 chains — price, volume, liquidity in real time.', cta:'Search Now', action:()=>showPage('search',null) },
+  { icon:'🔄', title:'Cross-Chain Swap in Seconds', body:'Get the best swap & bridge quotes via LiFi aggregator. No wallet needed to quote.', cta:'Get Quote', action:()=>showPage('swap',null) },
+  { icon:'💼', title:'Check Your Portfolio', body:'Enter any wallet address to see token pair data across all supported chains.', cta:'View Portfolio', action:()=>showPage('portfolio',null) },
+  { icon:'⚡', title:'Live Trade Feed', body:'Watch real-time buys and sells for any DEX pool. Auto-refreshes every 5 seconds.', cta:'Open Trades', action:()=>showPage('trades',null) },
+  { icon:'🚀', title:'Top Gainers Right Now', body:'See which tokens are pumping hardest across all chains in the last 24 hours.', cta:'See Gainers', action:()=>showPage('home',null) },
+  { icon:'⛓️', title:'10 Blockchains Supported', body:'Ethereum, BSC, Solana, Polygon, Arbitrum, Base, Avalanche and more — all free.', cta:'View Chains', action:()=>showPage('chains',null) },
+];
+
+let _lastAdIdx = -1;
+function renderAd(pageId) {
+  const slot = document.getElementById('ad-slot');
+  if (!slot) return;
+
+  // Real ad network — uncomment and configure when ready
+  if (USE_ADSENSE) {
+    slot.innerHTML = `<div class="ad-banner"><span class="ad-label">Ad</span>
+      <ins class="adsbygoogle ad-adsense" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="horizontal" data-full-width-responsive="true"></ins></div>`;
+    if (window.adsbygoogle) (window.adsbygoogle = window.adsbygoogle || []).push({});
+    return;
+  }
+
+  // Self-promo fallback — pick a different ad than last time
+  let idx;
+  do { idx = Math.floor(Math.random() * AD_UNITS.length); } while (idx === _lastAdIdx && AD_UNITS.length > 1);
+  _lastAdIdx = idx;
+  const ad = AD_UNITS[idx];
+
+  slot.innerHTML = `<div class="ad-banner">
+    <span class="ad-label">Sponsored</span>
+    <div class="ad-body">
+      <span class="ad-icon">${ad.icon}</span>
+      <div class="ad-text"><strong>${ad.title}</strong><p>${ad.body}</p></div>
+    </div>
+    <button class="ad-cta" id="ad-cta-btn">${ad.cta} →</button>
+  </div>`;
+  document.getElementById('ad-cta-btn').onclick = ad.action;
 }
 
 function fmt(n) {
@@ -1066,6 +1127,7 @@ loadTicker();
 setInterval(loadTicker, 60000);
 loadHome();
 setInterval(loadHome, 30000);
+renderAd('home');
 </script>
 </body>
 </html>
