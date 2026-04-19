@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { fmt, pctStr, pctClass, CHAINS } from '../utils'
 
-interface Props { onOpenToken: (chain: string, addr: string) => void }
+interface Props { initialChain?: string; initialAddr?: string; onOpenToken: (chain: string, addr: string) => void }
 
-export default function TokenPage({ onOpenToken }: Props) {
-  const [chain, setChain] = useState('bsc')
-  const [addr, setAddr] = useState('')
+export default function TokenPage({ initialChain, initialAddr, onOpenToken }: Props) {
+  const [chain, setChain] = useState(initialChain ?? 'bsc')
+  const [addr, setAddr] = useState(initialAddr ?? '')
   const [error, setError] = useState('')
   const [stats, setStats] = useState<{ label: string; value: string; change?: string }[]>([])
   const [pairs, setPairs] = useState<Record<string, unknown>[]>([])
+
+  useEffect(() => { if (initialAddr) load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function load() {
     setError(''); setStats([]); setPairs([])

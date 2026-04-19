@@ -51,23 +51,23 @@ export default function HomePage({ onOpenToken }: Props) {
     setLoading(true)
     try {
       const queries = chainFilter
-        ? [chainFilter === 'solana' ? 'SOL' : chainFilter === 'bsc' ? 'BNB' : 'USDT']
-        : ['USDT', 'USDC', 'WETH', 'WBNB']
+        ? [chainFilter === 'solana' ? 'SOL' : chainFilter === 'bsc' ? 'BNB' : chainFilter === 'ethereum' ? 'ETH' : 'USDT']
+        : ['USDT', 'WETH', 'BNB', 'SOL']
       const results = await Promise.allSettled(queries.map(q => fetch(`/search?q=${encodeURIComponent(q)}`).then(r => r.json())))
       const seen = new Set<string>()
       let all: Pair[] = []
       for (const r of results) {
         if (r.status === 'fulfilled') {
           for (const p of (r.value?.pairs ?? [])) {
-            if (!seen.has(p.pairAddress) && p.priceUsd && p.priceChange?.h24 != null) {
+            if (!seen.has(p.pairAddress) && p.priceUsd) {
               seen.add(p.pairAddress); all.push(p)
             }
           }
         }
       }
       if (chainFilter) all = all.filter(p => p.chainId === chainFilter)
-      if (tab === 'gainers') all.sort((a, b) => (b.priceChange?.h24 ?? 0) - (a.priceChange?.h24 ?? 0))
-      else if (tab === 'losers') all.sort((a, b) => (a.priceChange?.h24 ?? 0) - (b.priceChange?.h24 ?? 0))
+      if (tab === 'gainers' || tab === 'trending') all.sort((a, b) => (b.priceChange?.h24 ?? -Infinity) - (a.priceChange?.h24 ?? -Infinity))
+      else if (tab === 'losers') all.sort((a, b) => (a.priceChange?.h24 ?? Infinity) - (b.priceChange?.h24 ?? Infinity))
       else all.sort((a, b) => (b.volume?.h24 ?? 0) - (a.volume?.h24 ?? 0))
       setPairs(all)
       setUpdated(new Date().toLocaleTimeString())

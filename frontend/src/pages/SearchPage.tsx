@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { fmt, pctStr, pctClass } from '../utils'
 
 interface Props { initialQ?: string; onOpenToken: (chain: string, addr: string) => void }
@@ -8,6 +8,8 @@ export default function SearchPage({ initialQ, onOpenToken }: Props) {
   const [results, setResults] = useState<Record<string, unknown>[]>([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => { if (initialQ && initialQ.length >= 2) doSearch() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function doSearch() {
     setError('')
