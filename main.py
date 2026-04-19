@@ -117,11 +117,7 @@ async def _synthetic_klines(chain: str, pool: str, limit: int) -> dict:
 
 # ── Routes ──────────────────────────────────────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
-@app.get("/{full_path:path}", response_class=HTMLResponse, include_in_schema=False)
-def spa(full_path: str = ""):
-    # Don't intercept API routes
-    if full_path.startswith(("chart/", "trades/", "token/", "pairs/", "search", "trending", "portfolio/", "swap/", "chains", "docs", "openapi", "static/")):
-        raise HTTPException(404)
+def spa():
     try:
         with open("static/index.html") as f:
             return f.read()
