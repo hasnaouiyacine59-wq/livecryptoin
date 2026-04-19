@@ -9,6 +9,8 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 if os.path.isdir("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
+    if os.path.isdir("static/assets"):
+        app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
 
 GECKO        = "https://api.geckoterminal.com/api/v2"
 DEXSCREENER  = "https://api.dexscreener.com/latest/dex"
@@ -115,7 +117,11 @@ async def _synthetic_klines(chain: str, pool: str, limit: int) -> dict:
 
 # ── Routes ──────────────────────────────────────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
-def root():
+@app.get("/{full_path:path}", response_class=HTMLResponse, include_in_schema=False)
+def spa(full_path: str = ""):
+    # Don't intercept API routes
+    if full_path.startswith(("chart/", "trades/", "token/", "pairs/", "search", "trending", "portfolio/", "swap/", "chains", "docs", "openapi", "static/")):
+        raise HTTPException(404)
     try:
         with open("static/index.html") as f:
             return f.read()
